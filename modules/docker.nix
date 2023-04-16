@@ -100,7 +100,7 @@ in {
     ];
 
     # pass docker library as param
-    _module.args.docker = import ../lib/docker {inherit lib pkgs;};
+    _module.args.docker = pkgs.callPackage ../lib/docker {};
 
     # list of exported docker images
     docker.export =

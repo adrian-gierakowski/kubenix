@@ -1,4 +1,6 @@
-{pkgs}: {
-  chart2json = pkgs.callPackage ./chart2json.nix {};
-  fetch = pkgs.callPackage ./fetchhelm.nix {};
+{
+  callPackage,
+}: {
+  chart2json = callPackage ./chart2json.nix {};
+  fetch = callPackage ./fetchhelm.nix {};
 }

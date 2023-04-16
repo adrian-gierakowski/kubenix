@@ -18,35 +18,35 @@
     nixpkgs,
     ...
   } @ inputs:
-    (inputs.flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import inputs.nixpkgs {
-          overlays = [
-            self.overlays.default
-          ];
-          config.allowUnsupportedSystem = true;
-          inherit system;
-        };
-
-        inherit (pkgs) lib;
-
+    let
+      kubenixModules = import ./modules;
+      kubenixPackage = {
+        callPackage,
+        pkgs,
+        lib,
+      }: let
         kubenix = {
-          lib = import ./lib {inherit lib pkgs;};
-          evalModules = self.evalModules.${system};
-          modules = self.nixosModules.kubenix;
+          evalModules = evalModules;
+          importYaml = callPackage ./pkgs/importYaml.nix {};
+          lib = callPackage ./lib.nix {};
+          modules = kubenixModules;
+          toBase64 = callPackage ./pkgs/toBase64.nix {};
+          toMultiDocumentYaml = callPackage ./pkgs/toMultiDocumentYaml.nix {};
+          toYaml = callPackage ./pkgs/toYaml.nix {};
         };
 
         # evalModules with same interface as lib.evalModules and kubenix as
         # special argument
         evalModules = attrs @ {
+          # TODO: remove this shorthand as it's confusing and only saves two characters
+          # when used.
           module ? null,
           modules ? [module],
           ...
         }: let
-          lib' = lib.extend (lib: _self: import ./lib/upstreamables.nix {inherit lib pkgs;});
           attrs' = builtins.removeAttrs attrs ["module"];
         in
-          lib'.evalModules (lib.recursiveUpdate
+          lib.evalModules (lib.recursiveUpdate
             {
               modules =
                 modules
@@ -64,8 +64,22 @@
               };
             }
             attrs');
+        in kubenix
+      ;
+      overlay = _final: prev: {
+        kubenix = prev.callPackage kubenixPackage {};
+      };
+    in (inputs.flake-utils.lib.eachDefaultSystem (
+      system: let
+        pkgs = import inputs.nixpkgs {
+          overlays = [ overlay ];
+          config.allowUnsupportedSystem = true;
+          inherit system;
+        };
       in {
-        inherit evalModules pkgs;
+        inherit pkgs;
+        evalModules = pkgs.kubenix.evalModules;
+        kubenix = pkgs.kubenix;
 
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
@@ -151,7 +165,7 @@
             docs = import ./docs {
               inherit pkgs;
               options =
-                (self.evalModules.${system} {
+                (pkgs.kubenix.evalModules {
                   modules = builtins.attrValues (builtins.removeAttrs
                     # the submodules module currently doesn't evaluate:
                     #     error: No module found ‹name›/latest
@@ -172,7 +186,7 @@
             else pkgs.runCommandNoCC "testing-suite-config-assertions-for-${suite.name}-failed" {} "exit 1";
           examples = import ./docs/content/examples;
           mkK8STests = attrs:
-            (import ./tests {inherit evalModules;})
+            (import ./tests {evalModules = pkgs.kubenix.evalModules;})
             ({registry = "docker.io/gatehub";} // attrs);
         in
           {
@@ -188,9 +202,7 @@
       }
     ))
     // {
-      nixosModules.kubenix = import ./modules;
-      overlays.default = _final: prev: {
-        kubenix.evalModules = self.evalModules.${prev.system};
-      };
+      nixosModules.kubenix = kubenixModules;
+      overlays.default = overlay;
     };
 }

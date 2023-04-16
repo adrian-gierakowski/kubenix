@@ -5,6 +5,7 @@
   lib,
   pkgs,
   k8s,
+  kubenix,
   ...
 }:
 with lib; let
@@ -460,7 +461,7 @@ in {
     ];
 
     # expose k8s helper methods as module argument
-    _module.args.k8s = import ../lib/k8s {inherit lib;};
+    _module.args.k8s = pkgs.callPackage ../lib/k8s {};
 
     kubernetes.api = mkMerge ([
         {
@@ -495,7 +496,7 @@ in {
       (map
         (i: let
           # load yaml file
-          object = importYAML i;
+          object = kubenix.importYAML i;
           groupVersion = splitString "/" object.apiVersion;
           inherit (object.metadata) name;
           version = last groupVersion;
@@ -527,6 +528,6 @@ in {
       pkgs.writeText "${config.kubenix.project}-generated.json" (builtins.toJSON cfg.generated);
 
     kubernetes.resultYAML =
-      toMultiDocumentYaml "${config.kubenix.project}-generated.yaml" config.kubernetes.objects;
+      kubenix.toMultiDocumentYaml "${config.kubenix.project}-generated.yaml" config.kubernetes.objects;
   };
 }

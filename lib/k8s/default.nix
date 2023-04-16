@@ -79,7 +79,4 @@ with lib; rec {
         }
         // labels;
     };
-
-  inherit (lib) toBase64;
-  inherit (lib) octalToDecimal;
 }

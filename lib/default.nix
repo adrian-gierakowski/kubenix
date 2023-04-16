@@ -1,8 +1,8 @@
 {
+  callPackage,
   lib,
-  pkgs,
 }: {
-  k8s = import ./k8s {inherit lib;};
-  docker = import ./docker {inherit lib pkgs;};
-  helm = import ./helm {inherit pkgs;};
+  k8s = callPackage ./k8s {};
+  docker = callPackage ./docker {};
+  helm = callPackage ./helm {};
 }

@@ -5,7 +5,8 @@
   ...
 }:
 with lib;
-with import ../../lib/docker {inherit lib pkgs;}; let
+let
+  docker = pkgs.callPackage ../../lib/docker {};
   inherit (config) testing;
 
   allImages = unique (flatten (map (t: t.evaled.config.docker.export or []) testing.tests));
@@ -32,7 +33,7 @@ in {
   config.testing.docker = {
     images = allImages;
 
-    copyScript = copyDockerImages {
+    copyScript = docker.copyDockerImages {
       inherit (cfg) images;
       dest = "docker://" + cfg.registryUrl;
     };
