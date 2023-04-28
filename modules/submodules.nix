@@ -35,7 +35,7 @@ with lib; let
           )
           && (
             (length submoduleDefault.features == 0)
-            || (length (intersectLists submoduleDefault.features features)) > 0
+            || length (intersectLists submoduleDefault.features features) == length submoduleDefault.features
           )
       )
       config.submodules.defaults);
@@ -84,28 +84,39 @@ with lib; let
     matchingModule;
 
   passthruConfig =
-    mapAttrsToList
-    (name: _opt: {
-      ${name} = mkMerge (mapAttrsToList
-        (
-          _: inst:
-            if inst.passthru.enable
-            then inst.config.submodule.passthru.${name} or {}
-            else {}
+    let
+      submoduleInstances = builtins.attrValues config.submodules.instances;
+      optionNames = builtins.attrNames
+        (removeAttrs options ["_definedNames" "_module" "_m" "submodules"])
+      ;
+      getPassthruDefsForOptName = name: map
+        (inst: inst.config.submodule.passthru.${name})
+        (builtins.filter
+          (inst: inst.passthru.enable && inst.config.submodule.passthru ? ${name})
+          submoduleInstances
         )
-        config.submodules.instances);
-
-      _module.args = mkMerge (mapAttrsToList
-        (
-          _: inst:
-            if inst.passthru.enable
-            then inst.config.submodule.passthru._module.args or {}
-            else {}
-        )
-        config.submodules.instances);
-    })
-    (removeAttrs options ["_definedNames" "_module" "_m" "submodules"]);
-
+      ;
+      optionsPassthruDefs = map
+        (name: { "${name}" = mkMerge (getPassthruDefsForOptName name); })
+        optionNames
+      ;
+      moduleArgsPassthruDef =
+        let
+          argsDefs = map
+            (
+              inst:
+                if inst.passthru.enable
+                then inst.config.submodule.passthru._module.args or {}
+                else {}
+            )
+            submoduleInstances
+          ;
+        in
+          { _module.args = mkMerge argsDefs; }
+      ;
+    in
+      optionsPassthruDefs ++ [moduleArgsPassthruDef]
+  ;
   submoduleWithSpecialArgs = opts: specialArgs: let
     opts' = toList opts;
     inherit (lib.modules) evalModules;
@@ -376,7 +387,7 @@ in {
         # register exported functions as args
         _module.args = mkMerge (map
           (submodule: {
-            ${submodule.exportAs} = submodule.definition.exports;
+            "${submodule.exportAs}" = submodule.definition.exports;
           })
           (filter (submodule: submodule.exportAs != null) cfg.imports));
 

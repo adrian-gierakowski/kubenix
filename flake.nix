@@ -28,7 +28,7 @@
         kubenix = {
           evalModules = evalModules;
           importYaml = callPackage ./pkgs/importYaml.nix {};
-          lib = callPackage ./lib.nix {};
+          lib = callPackage ./lib {};
           modules = kubenixModules;
           toBase64 = callPackage ./pkgs/toBase64.nix {};
           toMultiDocumentYaml = callPackage ./pkgs/toMultiDocumentYaml.nix {};
