@@ -94,7 +94,7 @@ in {
         features = ["docker"];
         module = _: {
           # propagate registry options
-          docker.registry = cfg.registry;
+          docker.registry = lib.mkDefault cfg.registry;
         };
       }
     ];
