@@ -1,5 +1,5 @@
 # This file was generated with kubenix k8s generator, do not edit
-{ lib, config, ... }:
+{ lib, ... }:
 with lib; let
   types = lib.types // rec {
     str = mkOptionType {
