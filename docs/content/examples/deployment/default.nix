@@ -1,6 +1,6 @@
 { kubenix ? import ../../../.. }:
 kubenix.evalModules.${builtins.currentSystem} {
-  module = { kubenix, ... }: {
+  module = { ... }: {
     # instead of defining everything inline, let's import it
     imports = [ ./module.nix ];
 

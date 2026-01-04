@@ -1,4 +1,4 @@
-{ name, config, lib, kubenix, ... }:
+{ config, lib, kubenix, ... }:
 with lib; let
   inherit (config.submodules.instances) instance1;
   inherit (config.submodules.instances) instance2;

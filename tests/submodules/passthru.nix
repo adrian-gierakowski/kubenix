@@ -1,4 +1,4 @@
-{ name, config, lib, kubenix, ... }:
+{ config, lib, kubenix, ... }:
 with lib; let
   submodule = { name, ... }: {
     imports = [ kubenix.modules.submodule ];

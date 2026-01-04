@@ -31,7 +31,7 @@ with lib; let
     parentConfig = config;
   };
 
-  findSubmodule = { name, version ? null, latest ? true }:
+  findSubmodule = { name, version ? null }:
     let
       matchingSubmodules = filter
         (el:
