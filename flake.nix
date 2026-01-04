@@ -147,6 +147,7 @@
         projectRootFile = "flake.nix";
         programs = {
           nixpkgs-fmt.enable = true;
+          deadnix.enable = true;
           black.enable = true;
           prettier.enable = true;
           shfmt.enable = true;

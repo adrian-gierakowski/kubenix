@@ -1,4 +1,4 @@
-{ name, config, lib, kubenix, ... }:
+{ config, lib, kubenix, ... }:
 with lib; let
   cfg = config.submodules.instances.instance;
   inherit (cfg.config.submodule) args;
