@@ -432,6 +432,7 @@ in
               description = "Custom type module";
               type = types.deferredModule;
               default = { freeformType = types.attrs; };
+              defaultText = "freeformType = types.attrs";
             };
           };
         }
