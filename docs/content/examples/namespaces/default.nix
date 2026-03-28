@@ -1,6 +1,6 @@
 { kubenix ? import ../../../.. }:
 kubenix.evalModules.${builtins.currentSystem} {
-  module = { kubenix, ... }: {
+  module = { ... }: {
     imports = [ ./module.nix ];
 
     kubenix.project = "multi-namespace-example";

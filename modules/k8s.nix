@@ -35,7 +35,7 @@ with lib; let
     else
       value;
 
-  apiOptions = { config, ... }: {
+  apiOptions = { ... }: {
     options = {
       definitions = mkOption {
         description = "Attribute set of kubernetes definitions";

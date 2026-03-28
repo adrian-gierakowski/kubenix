@@ -1,4 +1,4 @@
-{ kubenix, config, lib, ... }: {
+{ kubenix, lib, ... }: {
   imports = [ kubenix.modules.k8s ];
 
   # 1. Define the Custom Resource Definition (CRD)

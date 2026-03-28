@@ -1,4 +1,4 @@
-{ name, config, lib, kubenix, ... }:
+{ config, lib, kubenix, ... }:
 with lib; let
   inst-exact = config.submodules.instances.inst-exact.config;
   inst-regex = config.submodules.instances.inst-regex.config;

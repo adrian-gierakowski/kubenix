@@ -1,4 +1,4 @@
-{ name, config, lib, kubenix, images, ... }:
+{ config, lib, kubenix, images, ... }:
 with lib; {
   imports = with kubenix.modules; [ test submodules k8s docker ];
 

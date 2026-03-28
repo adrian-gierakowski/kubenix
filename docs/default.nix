@@ -9,7 +9,7 @@ let
   # Replace functions by the string <function>
   substFunction = x:
     if builtins.isAttrs x
-    then lib.mapAttrs (name: substFunction) x
+    then lib.mapAttrs (_name: substFunction) x
     else if builtins.isList x
     then map substFunction x
     else if lib.isFunction x

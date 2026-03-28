@@ -14,7 +14,7 @@ in
 
     images = mkOption {
       description = "Attribute set of docker images that should be published";
-      type = types.attrsOf (types.submodule ({ name, config, ... }: {
+      type = types.attrsOf (types.submodule ({ config, ... }: {
         options = {
           image = mkOption {
             description = "Docker image to publish";
